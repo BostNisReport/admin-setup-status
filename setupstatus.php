@@ -212,7 +212,7 @@ $plugin = plugin_basename( __FILE__ , 'settings');
 add_filter( "plugin_action_links_$plugin", 'plugin_add_settings_link' );
 
 function setupstatus_register_options_page() {
-  add_options_page('Setup Setting List', 'Setup Setting List', 'manage_options', 'setupstatus', 'myplugin_options_page');
+  add_options_page('Admin Settings Status', 'Admin Settings Status', 'manage_options', 'setupstatus', 'myplugin_options_page');
 }
 add_action('admin_menu', 'setupstatus_register_options_page');
 
@@ -310,7 +310,7 @@ class Example_List_Table extends WP_List_Table
             'setup_status'  => 'Status',
             'status_note' 	=> 'Note',
 			'issue_date' 	=> 'Time',
-			'action' 	=> 'Action',
+			//'action' 	=> 'Action',
         );
         return $columns;
     }
@@ -367,12 +367,12 @@ class Example_List_Table extends WP_List_Table
 			}		
 		
 			$data[] = array(
-                    'page_name'       	=> $result->page_name,
+                    'page_name'       	=> '<a href="'.$result->page_url.'" target="_blank">'.$result->page_name.'</a>',
                     'assignee' 			=> $result->assignee,
-                    'setup_status'      => '<div style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px;"></div> <div style="float:left;">'.$statusText.'</div>',
+                    'setup_status'      => '<div style="width:15px; height:15px; border:1px solid #ccc; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px;"></div> <div style="float:left;">'.$statusText.'</div>',
                     'status_note'    	=> $result->status_note,
 					'issue_date' 		=> $result->issue_date,
-					'action'			=> '<a href="'.$result->page_url.'" target="_blank">VIEW</a>',
+					//'action'			=> '<a href="'.$result->page_url.'" target="_blank">VIEW</a>',
                     );		
 		endforeach;		
       
@@ -394,7 +394,7 @@ class Example_List_Table extends WP_List_Table
             case 'setup_status':
             case 'status_note':
 			case 'issue_date':
-			case 'action':
+			//case 'action':
                 return $item[ $column_name ];
             default:
                 return print_r( $item, true ) ;
