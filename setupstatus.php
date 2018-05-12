@@ -78,7 +78,7 @@ function add_toolbar_items($admin_bar){
 		),
 	));
     
-	$admin_bar->add_menu( array(
+	/*$admin_bar->add_menu( array(
 		'id'    => 'ss-sub-item',
 		'parent' => 'ss-item',
 		'title' => 'Notes',
@@ -88,7 +88,7 @@ function add_toolbar_items($admin_bar){
 			'class' => 'ss_menu_edit_class',
 			'rel' => 'modal:open'
 		),
-	));
+	));*/
     
 	$admin_bar->add_menu( array(
 		'id'    => 'ss-second-sub-item',
