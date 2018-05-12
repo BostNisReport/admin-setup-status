@@ -137,7 +137,7 @@ function add_toolbar_items($admin_bar){
 						</select>
 					</p>
 					<p>Notes:<br>
-					<textarea name="notes" style="width:100%;" id="notes"></textarea>
+					<textarea name="notes" style="width:100%; height: 300px;" id="notes"></textarea>
 					</p>
 					<p>	
 					<input type="hidden" name="action" value="post_setup_status_data" >
@@ -185,7 +185,7 @@ function add_toolbar_items($admin_bar){
 						</select>
 					</p>
 					<p>Notes:<br>
-					<textarea name="notes" style="width:100%;" id="notes"></textarea>
+					<textarea name="notes" style="width:100%; height: 300px;" id="notes"></textarea>
 					</p>
 					<p>	
 					<input type="hidden" name="action" value="post_setup_status_data" >
