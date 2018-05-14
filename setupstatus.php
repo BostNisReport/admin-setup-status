@@ -156,8 +156,26 @@ function add_toolbar_items($admin_bar){
 					</p>
 					<p>Assignee:<br>				
 						<select class="assigneeValData" name="assignee">
-							<?php wp_dropdown_roles();?>
-						</select>
+						<?php 
+							echo '<optgroup label="Administrator">';
+							$args1 = array(
+								'role' => 'administrator',
+								'orderby' => 'user_nicename',
+								'order' => 'ASC'
+							);
+							$adminuser = get_users($args1);							
+							foreach ($adminuser as $user) {
+								echo '<option value="'.$user->display_name.'">'.$user->display_name.'</option>';
+							}
+							echo '</optgroup>'; 
+						
+							foreach ( $wp_roles->roles as $key=>$value ): 
+						
+							if ($key!='administrator'){?>
+								<option value="<?php echo $key; ?>"><?php echo $value['name']; ?></option>
+							<?php }?>
+						<?php endforeach; ?>
+						</select>	
 					</p>
 					<p>Notes:<br>
 					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"></textarea>
@@ -205,8 +223,26 @@ function add_toolbar_items($admin_bar){
 					</p>
 					<p>Assignee:<br>				
 						<select class="assigneeValData" name="assignee">
-							<?php wp_dropdown_roles();?>
-						</select>
+						<?php 
+							echo '<optgroup label="Administrator">';
+							$args1 = array(
+								'role' => 'administrator',
+								'orderby' => 'user_nicename',
+								'order' => 'ASC'
+							);
+							$adminuser = get_users($args1);							
+							foreach ($adminuser as $user) {
+								echo '<option value="'.$user->display_name.'">'.$user->display_name.'</option>';
+							}
+							echo '</optgroup>'; 
+						
+							foreach ( $wp_roles->roles as $key=>$value ): 
+						
+							if ($key!='administrator'){?>
+								<option value="<?php echo $key; ?>"><?php echo $value['name']; ?></option>
+							<?php }?>
+						<?php endforeach; ?>
+						</select>	
 					</p>
 					<p>Notes:<br>
 					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"></textarea>
