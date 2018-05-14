@@ -65,6 +65,8 @@ function hm_my_script_enqueuer() {
 	}
 }
 
+if (is_admin()){
+
 add_action('admin_bar_menu', 'add_toolbar_items', 100);
 function add_toolbar_items($admin_bar){
     
@@ -509,4 +511,5 @@ class Example_List_Table extends WP_List_Table
         }
         return -$result;
     }
+}
 }
