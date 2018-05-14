@@ -140,7 +140,11 @@ function add_toolbar_items($admin_bar){
 	
 	if ( count($resultColor)>0 && count($resultColor)!='' ) { ?>
 		<style>
+			<?php if ($navText=="Edit"){?>
 			.ss_menu_parent_class .ab-icon::before{ color: <?php echo $colorCode;?> !important; }
+			<?php }else{ ?>
+			.ss_menu_parent_class .ab-icon::before{ color: #a0a5aa !important; }
+			<?php }?>
 		</style>
 		<div id="ex1" class="modal" style="display:none;">
 			<div class="modal-info">
