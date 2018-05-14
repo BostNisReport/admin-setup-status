@@ -121,7 +121,7 @@ function add_toolbar_items($admin_bar){
 				<div id="nds_form_feedback" style="margin-bottom:10px; text-align:center;"></div>
 				<form method="post" id="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
 					<p>Status:<br>
-						<select id="status_color" name="status_color">
+						<select class="statusColor" name="status_color">
 							<option value="ffffff">Default - White</option>
 							<option value="2331e9">Ongoing - Blue</option>
 							<option value="c311e9">To-Do - Purple</option>
@@ -132,17 +132,18 @@ function add_toolbar_items($admin_bar){
 						</select>
 					</p>
 					<p>Assignee:<br>				
-						<select id="assignee" name="assignee">
+						<select class="assigneeValData" name="assignee">
 							<?php wp_dropdown_roles();?>
 						</select>
 					</p>
 					<p>Notes:<br>
-					<textarea name="notes" style="width:100%; height: 300px;" id="notes"></textarea>
+					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"></textarea>
 					</p>
 					<p>	
 					<input type="hidden" name="action" value="post_setup_status_data" >
 					<input type="hidden" name="nonce" value="15a401ef5e" >
 					<input type="hidden" name="page_title" value="<?php echo get_admin_page_title();?>" >
+					<input type="hidden" id="uid" name="uid" value="" >
 					<input type="submit" id="setupstatus" class="button button-primary" value="Save" /></p>
 				</form>
 			</div>
@@ -167,9 +168,9 @@ function add_toolbar_items($admin_bar){
 		<div id="ex1" class="modal" style="display:none;">
 			<div class="modal-info">
 				<div id="nds_form_feedback" style="margin-bottom:10px; text-align:center;"></div>
-				<form method="post" id="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
+				<form method="post" id="nds_update_setup_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
 					<p>Status:<br>
-						<select id="status_color" name="status_color">
+						<select class="statusColor" name="status_color">
 							<option value="ffffff">Default - White</option>
 							<option value="2331e9">Ongoing - Blue</option>
 							<option value="c311e9">To-Do - Purple</option>
@@ -180,12 +181,12 @@ function add_toolbar_items($admin_bar){
 						</select>
 					</p>
 					<p>Assignee:<br>				
-						<select id="assignee" name="assignee">
+						<select class="assigneeValData" name="assignee">
 							<?php wp_dropdown_roles();?>
 						</select>
 					</p>
 					<p>Notes:<br>
-					<textarea name="notes" style="width:100%; height: 300px;" id="notes"></textarea>
+					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"></textarea>
 					</p>
 					<p>	
 					<input type="hidden" name="action" value="post_setup_status_data" >
@@ -367,13 +368,13 @@ class Example_List_Table extends WP_List_Table
 			}		
 		
 			$data[] = array(
-                    'page_name'       	=> '<a href="'.$result->page_url.'" target="_blank">'.$result->page_name.'</a>',
+                    'page_name'       	=> $result->page_name.'<input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
                     'assignee' 			=> $result->assignee,
-                    'setup_status'      => '<div style="width:15px; height:15px; border:1px solid #ccc; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px;"></div> <div style="float:left;">'.$statusText.'</div>',
+                    'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
                     'status_note'    	=> $result->status_note,
 					'issue_date' 		=> $result->issue_date,
-					//'action'			=> '<a href="'.$result->page_url.'" target="_blank">VIEW</a>',
-                    );		
+					'action'			=> '<a href="'.$result->page_url.'" target="_blank">VIEW</a> | <a href="#ex1" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>',
+                    );	
 		endforeach;		
       
         return $data;
