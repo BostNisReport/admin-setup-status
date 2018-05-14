@@ -68,6 +68,20 @@ function hm_my_script_enqueuer() {
 add_action('admin_bar_menu', 'add_toolbar_items', 100);
 function add_toolbar_items($admin_bar){
     
+	global $wpdb;
+	
+	$current_url = $_SERVER[HTTP_REFERER];
+	
+	$sqlAvailable = "SELECT * FROM ".$wpdb->prefix."setup_status_info WHERE page_name = '".get_admin_page_title()."'";
+	$resultAvailale = $wpdb->get_results($sqlColor);
+	
+	if ($resultAvailale[0]->id>0){
+		$navText = 'Edit';
+	}else{
+		$navText = 'Add';
+	}
+	
+	
 	$admin_bar->add_menu( array(
 		'id'    => 'ss-item',		
 		'title' => '<span class="ab-icon"></span>' . _( 'Setup Status' ),
@@ -93,10 +107,10 @@ function add_toolbar_items($admin_bar){
 	$admin_bar->add_menu( array(
 		'id'    => 'ss-second-sub-item',
 		'parent' => 'ss-item',
-		'title' => 'Edit',
+		'title' => $navText,
 		'href'  => '#ex1',
 		'meta'  => array(
-			'title' => __('Setup Status Edit'),
+			'title' => __('Setup Status '.$navText),
 			'class' => 'ss_menu_edit_class',
 			'rel' => 'modal:open'
 		),
