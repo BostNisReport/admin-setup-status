@@ -373,7 +373,7 @@ class Example_List_Table extends WP_List_Table
                     'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
                     'status_note'    	=> $result->status_note,
 					'issue_date' 		=> $result->issue_date,
-					'action'			=> '<a href="'.$result->page_url.'" target="_blank">VIEW</a> | <a href="#ex1" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>',
+					'action'			=> '<a href="#ex1" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>',
                     );	
 		endforeach;		
       
