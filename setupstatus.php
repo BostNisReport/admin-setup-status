@@ -131,7 +131,8 @@ function add_toolbar_items($admin_bar){
 	$user = wp_get_current_user();
     $role = ( array ) $user->roles;
     	
-	$sqlColor = "SELECT setup_status, status_note FROM ".$wpdb->prefix."setup_status_info uo WHERE id = (SELECT MAX(id) FROM ".$wpdb->prefix."setup_status_info WHERE assignee = uo.assignee AND assignee = '".$role[0]."')";
+	//$sqlColor = "SELECT setup_status, status_note FROM ".$wpdb->prefix."setup_status_info uo WHERE id = (SELECT MAX(id) FROM ".$wpdb->prefix."setup_status_info WHERE assignee = uo.assignee AND assignee = '".$role[0]."')";
+	$sqlColor = "SELECT * FROM ".$wpdb->prefix."setup_status_info uo WHERE id = (SELECT MAX(id) FROM ".$wpdb->prefix."setup_status_info WHERE page_name = uo.page_name AND page_name = '".get_admin_page_title()."')";
 	$resultColor = $wpdb->get_results($sqlColor);
 	$colorCode = '#'.$resultColor[0]->setup_status;
 	
@@ -145,16 +146,17 @@ function add_toolbar_items($admin_bar){
 				<form method="post" id="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
 					<p>Status:<br>
 						<select class="statusColor" name="status_color">
-							<option value="ffffff">Default - White</option>
-							<option value="2331e9">Ongoing - Blue</option>
-							<option value="c311e9">To-Do - Purple</option>
-							<option value="e4eb17">In Development - Yellow</option>
-							<option value="e3951b">In Progress - Orange</option>
-							<option value="59b61b">Done - Green</option>
-							<option value="e91a37">Warning - Red</option>
+							<option <?php if ($resultColor[0]->setup_status == "ffffff"){ echo 'selected="selected"';} ?> value="ffffff">Default - White</option>
+							<option <?php if ($resultColor[0]->setup_status == "2331e9"){ echo 'selected="selected"';} ?> value="2331e9">Ongoing - Blue</option>
+							<option <?php if ($resultColor[0]->setup_status == "c311e9"){ echo 'selected="selected"';} ?> value="c311e9">To-Do - Purple</option>
+							<option <?php if ($resultColor[0]->setup_status == "e4eb17"){ echo 'selected="selected"';} ?> value="e4eb17">In Development - Yellow</option>
+							<option <?php if ($resultColor[0]->setup_status == "e3951b"){ echo 'selected="selected"';} ?> value="e3951b">In Progress - Orange</option>
+							<option <?php if ($resultColor[0]->setup_status == "59b61b"){ echo 'selected="selected"';} ?> value="59b61b">Done - Green</option>
+							<option <?php if ($resultColor[0]->setup_status == "e91a37"){ echo 'selected="selected"';} ?> value="e91a37">Warning - Red</option>
 						</select>
 					</p>
 					<p>Assignee:<br>				
+						<?php global $wp_roles; ?>
 						<select class="assigneeValData" name="assignee">
 						<?php 
 							echo '<optgroup label="Administrator">';
@@ -165,26 +167,32 @@ function add_toolbar_items($admin_bar){
 							);
 							$adminuser = get_users($args1);							
 							foreach ($adminuser as $user) {
-								echo '<option value="'.$user->display_name.'">'.$user->display_name.'</option>';
+								if ($resultColor[0]->assignee == $user->display_name){ $selData = 'selected="selected"';}
+								else { $selData = '';}
+								echo '<option '.$selData.' value="'.$user->display_name.'">'.$user->display_name.'</option>';
 							}
 							echo '</optgroup>'; 
 						
 							foreach ( $wp_roles->roles as $key=>$value ): 
 						
-							if ($key!='administrator'){?>
-								<option value="<?php echo $key; ?>"><?php echo $value['name']; ?></option>
+							if ($key!='administrator'){
+								
+								if ($resultColor[0]->assignee == $key){ $selData = 'selected="selected"';}
+								else { $selData = '';}
+								?>
+								<option <?php echo $selData;?> value="<?php echo $key; ?>"><?php echo $value['name']; ?></option>
 							<?php }?>
 						<?php endforeach; ?>
 						</select>	
 					</p>
 					<p>Notes:<br>
-					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"></textarea>
+					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"><?php echo $resultColor[0]->status_note;?></textarea>
 					</p>
 					<p>	
 					<input type="hidden" name="action" value="post_setup_status_data" >
 					<input type="hidden" name="nonce" value="15a401ef5e" >
 					<input type="hidden" name="page_title" value="<?php echo get_admin_page_title();?>" >
-					<input type="hidden" id="uid" name="uid" value="" >
+					<input type="hidden" id="uid" name="uid" value="<?php echo $resultColor[0]->id;?>" >
 					<input type="submit" id="setupstatus" class="button button-primary" value="Save" /></p>
 				</form>
 			</div>
@@ -221,7 +229,8 @@ function add_toolbar_items($admin_bar){
 							<option value="e91a37">Warning - Red</option>
 						</select>
 					</p>
-					<p>Assignee:<br>				
+					<p>Assignee:<br>
+						<?php global $wp_roles; ?>
 						<select class="assigneeValData" name="assignee">
 						<?php 
 							echo '<optgroup label="Administrator">';
