@@ -355,6 +355,12 @@ class Example_List_Table extends WP_List_Table
     private function table_data()
     {
 		global $wpdb;	
+	    
+	    	if( is_user_logged_in() ) {
+			$user = wp_get_current_user();
+			$role = ( array ) $user->roles;
+			$uRole = $role[0];
+		}
 		
 		$sql = "SELECT * FROM ".$wpdb->prefix."setup_status_info";
 		$results = $wpdb->get_results($sql);
@@ -379,15 +385,22 @@ class Example_List_Table extends WP_List_Table
 				$statusText = "Done";
 			}if ($result->setup_status == 'e91a37'){
 				$statusText = "Warning";
-			}		
+			}	
+	    
+	    		if ($uRole == 'administrator'){
+				$actionString = '<a href="#ex1" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>';
+			}else{
+				$actionString = '<a href="'.$result->page_url.'" target="_blank">VIEW</a>';
+			}
+	    
 		
-			$data[] = array(
+		    $data[] = array(
                     'page_name'       	=> $result->page_name.'<input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
-                    'assignee' 			=> $result->assignee,
+                    'assignee' 		=> $result->assignee,
                     'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
                     'status_note'    	=> $result->status_note,
-					'issue_date' 		=> $result->issue_date,
-					'action'			=> '<a href="#ex1" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>',
+		    'issue_date' 	=> $result->issue_date,
+		    'action'		=> $actionString,
                     );	
 		endforeach;		
       
