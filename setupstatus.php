@@ -104,17 +104,26 @@ function add_toolbar_items($admin_bar){
 		),
 	));*/
     
-	$admin_bar->add_menu( array(
-		'id'    => 'ss-second-sub-item',
-		'parent' => 'ss-item',
-		'title' => $navText,
-		'href'  => '#ex1',
-		'meta'  => array(
-			'title' => __('Setup Status '.$navText),
-			'class' => 'ss_menu_edit_class',
-			'rel' => 'modal:open'
-		),
-	));
+	if( is_user_logged_in() ) {
+		$user = wp_get_current_user();
+		$role = ( array ) $user->roles;
+		$uRole = $role[0];
+	}
+	if ($uRole == 'administrator'){
+		$admin_bar->add_menu( array(
+			'id'    => 'ss-second-sub-item',
+			'parent' => 'ss-item',
+			'title' => $navText,
+			'href'  => '#ex1',
+			'meta'  => array(
+				'title' => __('Setup Status '.$navText),
+				'class' => 'ss_menu_edit_class',
+				'rel' => 'modal:open'
+			),
+		));
+	}	
+
+	
 	
 	
 	global $wpdb;
