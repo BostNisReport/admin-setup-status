@@ -30,7 +30,7 @@ add_action( 'wp_enqueue_scripts', 'custom_wp_toolbar_css_admin' );
  
 function custom_wp_toolbar_css_admin() {
 	if (is_admin()){
-        wp_register_style( 'add_custom_wp_toolbar_css', plugin_dir_url( __FILE__ ) . 'assets/css/setupstatus-admin.css','','', 'screen' );
+        wp_register_style( 'add_custom_wp_toolbar_css', SETUPSTATUS_PLUGIN_URL. 'assets/css/setupstatus-admin.css','','', 'screen' );
         wp_enqueue_style( 'add_custom_wp_toolbar_css' );
 	}
 }
@@ -39,7 +39,7 @@ function wptuts_styles_with_the_lot()
 { 
 	if (is_admin()){
 		// Register the style like this for a plugin:
-		wp_register_style( 'custom-style', plugins_url( 'assets/css/setupstatus.css', __FILE__ ), array(), '20120208', 'all' );
+		wp_register_style( 'custom-style', SETUPSTATUS_PLUGIN_URL.'/assets/css/setupstatus.css', array(), '20120208', 'all' );
 		wp_enqueue_style( 'custom-style' );
 	}
 }
@@ -47,9 +47,9 @@ add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 
 function jquery_modal() {
 	if (is_admin()){
-		echo '<link href="'.plugins_url( 'setupstatus/assets/css/vendor/jquery.modal.min.css').'"  rel="stylesheet">';
-		echo '<script type="text/javascript" src="'.plugins_url( 'setupstatus/assets/js/jquery.min.js').'"></script>';
-		echo '<script type="text/javascript" src="'.plugins_url( 'setupstatus/assets/js/jquery.modal.min.js').'"></script>';
+		echo '<link href="'.SETUPSTATUS_PLUGIN_URL.'/assets/css/vendor/jquery.modal.min.css'.'"  rel="stylesheet">';
+		echo '<script type="text/javascript" src="'.SETUPSTATUS_PLUGIN_URL.'/assets/js/jquery.min.js'.'"></script>';
+		echo '<script type="text/javascript" src="'.SETUPSTATUS_PLUGIN_URL.'/assets/js/jquery.modal.min.js'.'"></script>';
 		//echo '<script type="text/javascript" src="'.plugins_url( 'setupstatus/assets/js/setupstatus.js').'"></script>';
 	}
 }
@@ -59,7 +59,7 @@ add_action('admin_head', 'jquery_modal');
 add_action( 'init', 'hm_my_script_enqueuer' );
 function hm_my_script_enqueuer() {
 	if (is_admin()){
-		wp_register_script( "hm_edit_field_script", plugins_url() .'/setupstatus/assets/js/setupstatus.js');
+		wp_register_script( "hm_edit_field_script", SETUPSTATUS_PLUGIN_URL.'/assets/js/setupstatus.js');
 		wp_localize_script( 'hm_edit_field_script', 'HM_Ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ), 'savingMsg'=>'Saving ...' ));
 		wp_enqueue_script( 'hm_edit_field_script' );
 	}
