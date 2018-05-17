@@ -13,6 +13,7 @@ define('SETUPSTATUS_IMG_URL', SETUPSTATUS_PLUGIN_URL . 'assets/img/');
 define('SETUPSTATUS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SETUPSTATUS_THEME_DIR', get_stylesheet_directory());
 
+
 // register custom DB on plugin activation
 require_once(SETUPSTATUS_PLUGIN_DIR.'lib/db.php');
 
@@ -29,40 +30,38 @@ add_action( 'admin_enqueue_scripts', 'custom_wp_toolbar_css_admin' );
 add_action( 'wp_enqueue_scripts', 'custom_wp_toolbar_css_admin' );
  
 function custom_wp_toolbar_css_admin() {
-	if (is_admin()){
-        wp_register_style( 'add_custom_wp_toolbar_css', SETUPSTATUS_PLUGIN_URL. 'assets/css/setupstatus-admin.css','','', 'screen' );
+        wp_register_style( 'add_custom_wp_toolbar_css', plugin_dir_url( __FILE__ ) . 'assets/css/setupstatus-admin.css','','', 'screen' );
         wp_enqueue_style( 'add_custom_wp_toolbar_css' );
-	}
 }
 
 function wptuts_styles_with_the_lot()
 { 
-	if (is_admin()){
-		// Register the style like this for a plugin:
-		wp_register_style( 'custom-style', SETUPSTATUS_PLUGIN_URL.'/assets/css/setupstatus.css', array(), '20120208', 'all' );
-		wp_enqueue_style( 'custom-style' );
-	}
+    // Register the style like this for a plugin:
+    wp_register_style( 'custom-style', plugins_url( 'assets/css/setupstatus.css', __FILE__ ), array(), '20120208', 'all' );
+	// or
+    // Register the style like this for a theme:
+    //wp_register_style( 'custom-style', get_template_directory_uri() . 'assets/css/csetupstatus.css', array(), '20120208', 'all' );
+	//wp_register_style( 'fa-style', get_template_directory_uri() . 'assets/css/vendor/font-awesome.css', array(), '201202018', 'all' );
+ 
+    // For either a plugin or a theme, you can then enqueue the style:
+    wp_enqueue_style( 'custom-style' );
 }
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 
 function jquery_modal() {
-	if (is_admin()){
-		echo '<link href="'.SETUPSTATUS_PLUGIN_URL.'/assets/css/vendor/jquery.modal.min.css'.'"  rel="stylesheet">';
-		echo '<script type="text/javascript" src="'.SETUPSTATUS_PLUGIN_URL.'/assets/js/jquery.min.js'.'"></script>';
-		echo '<script type="text/javascript" src="'.SETUPSTATUS_PLUGIN_URL.'/assets/js/jquery.modal.min.js'.'"></script>';
-		//echo '<script type="text/javascript" src="'.plugins_url( 'setupstatus/assets/js/setupstatus.js').'"></script>';
-	}
+	echo '<link href="'.plugins_url( 'admin-setup-status-master/assets/css/vendor/jquery.modal.min.css').'"  rel="stylesheet">';
+	echo '<script type="text/javascript" src="'.plugins_url( 'admin-setup-status-master/assets/js/jquery.min.js').'"></script>';
+	echo '<script type="text/javascript" src="'.plugins_url( 'admin-setup-status-master/assets/js/jquery.modal.min.js').'"></script>';
+	//echo '<script type="text/javascript" src="'.plugins_url( 'setupstatus/assets/js/setupstatus.js').'"></script>';
 }
 add_action('admin_head', 'jquery_modal');
 
 
 add_action( 'init', 'hm_my_script_enqueuer' );
 function hm_my_script_enqueuer() {
-	if (is_admin()){
-		wp_register_script( "hm_edit_field_script", SETUPSTATUS_PLUGIN_URL.'/assets/js/setupstatus.js');
-		wp_localize_script( 'hm_edit_field_script', 'HM_Ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ), 'savingMsg'=>'Saving ...' ));
-		wp_enqueue_script( 'hm_edit_field_script' );
-	}
+	wp_register_script( "hm_edit_field_script", plugins_url() .'/admin-setup-status-master/assets/js/setupstatus.js', array('jquery') );
+	wp_localize_script( 'hm_edit_field_script', 'HM_Ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ), 'savingMsg'=>'Saving ...' ));
+	wp_enqueue_script( 'hm_edit_field_script' );
 }
 
 if (is_admin()){
@@ -71,6 +70,21 @@ add_action('admin_bar_menu', 'add_toolbar_items', 100);
 function add_toolbar_items($admin_bar){
     
 	global $wpdb;
+
+	$user = wp_get_current_user();
+    $role = ( array ) $user->roles;
+    	
+	//$sqlColor = "SELECT setup_status, status_note FROM ".$wpdb->prefix."setup_status_info uo WHERE id = (SELECT MAX(id) FROM ".$wpdb->prefix."setup_status_info WHERE assignee = uo.assignee AND assignee = '".$role[0]."')";
+	$sqlColor = "SELECT * FROM ".$wpdb->prefix."setup_status_info uo WHERE id = (SELECT MAX(id) FROM ".$wpdb->prefix."setup_status_info WHERE page_name = uo.page_name AND page_name = '".get_admin_page_title()."')";
+	$resultColor = $wpdb->get_results($sqlColor);
+	$colorCode = '#'.$resultColor[0]->setup_status;
+	
+	if ( count($resultColor)>0 && count($resultColor)!='' ) {
+		$modalTarget = '#ex1';
+	}else{
+		$modalTarget = '#ex3';
+	}
+	
 	
 	$current_url = $_SERVER[HTTP_REFERER];
 	
@@ -116,7 +130,7 @@ function add_toolbar_items($admin_bar){
 			'id'    => 'ss-second-sub-item',
 			'parent' => 'ss-item',
 			'title' => $navText,
-			'href'  => '#ex1',
+			'href'  => $modalTarget,
 			'meta'  => array(
 				'title' => __('Setup Status '.$navText),
 				'class' => 'ss_menu_edit_class',
@@ -171,7 +185,8 @@ function add_toolbar_items($admin_bar){
 								'orderby' => 'user_nicename',
 								'order' => 'ASC'
 							);
-							$adminuser = get_users($args1);							
+							$adminuser = get_users($args1);
+								
 							foreach ($adminuser as $user) {
 								if ($resultColor[0]->assignee == $user->display_name){ $selData = 'selected="selected"';}
 								else { $selData = '';}
@@ -220,10 +235,10 @@ function add_toolbar_items($admin_bar){
 				</div>		
 			</div>
 		</div>
-		<div id="ex1" class="modal" style="display:none;">
+		<div id="ex3" class="modal" style="display:none;">
 			<div class="modal-info">
 				<div id="nds_form_feedback" style="margin-bottom:10px; text-align:center;"></div>
-				<form method="post" id="nds_update_setup_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
+				<form method="post" id="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
 					<p>Status:<br>
 						<select class="statusColor" name="status_color">
 							<option value="ffffff">Default - White</option>
@@ -245,7 +260,8 @@ function add_toolbar_items($admin_bar){
 								'orderby' => 'user_nicename',
 								'order' => 'ASC'
 							);
-							$adminuser = get_users($args1);							
+							$adminuser = get_users($args1);	
+							
 							foreach ($adminuser as $user) {
 								echo '<option value="'.$user->display_name.'">'.$user->display_name.'</option>';
 							}
@@ -516,4 +532,4 @@ class Example_List_Table extends WP_List_Table
         return -$result;
     }
 }
-}
+}?>
