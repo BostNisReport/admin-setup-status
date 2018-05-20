@@ -13,6 +13,8 @@ define('SETUPSTATUS_IMG_URL', SETUPSTATUS_PLUGIN_URL . 'assets/img/');
 define('SETUPSTATUS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SETUPSTATUS_THEME_DIR', get_stylesheet_directory());
 
+// Set filter only for admin access
+if (is_admin()){
 
 // register custom DB on plugin activation
 require_once(SETUPSTATUS_PLUGIN_DIR.'lib/db.php');
@@ -64,7 +66,7 @@ function hm_my_script_enqueuer() {
 	wp_enqueue_script( 'hm_edit_field_script' );
 }
 
-if (is_admin()){
+
 
 add_action('admin_bar_menu', 'add_toolbar_items', 100);
 function add_toolbar_items($admin_bar){
@@ -207,7 +209,7 @@ function add_toolbar_items($admin_bar){
 						</select>	
 					</p>
 					<p>Notes:<br>
-					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"><?php echo $resultColor[0]->status_note;?></textarea>
+					<textarea name="notes" class="statusNote" style="width:100%;height:300px;" id="notes"><?php echo $resultColor[0]->status_note;?></textarea>
 					</p>
 					<p>	
 					<input type="hidden" name="action" value="post_setup_status_data" >
@@ -276,7 +278,7 @@ function add_toolbar_items($admin_bar){
 						</select>	
 					</p>
 					<p>Notes:<br>
-					<textarea name="notes" class="statusNote" style="width:100%;" id="notes"></textarea>
+					<textarea name="notes" class="statusNote" style="width:100%;height:300px;" id="notes"></textarea>
 					</p>
 					<p>	
 					<input type="hidden" name="action" value="post_setup_status_data" >
@@ -463,20 +465,21 @@ class Example_List_Table extends WP_List_Table
 				$statusText = "Warning";
 			}	
 	    
-	    		if ($uRole == 'administrator'){
+	    	if ($uRole == 'administrator'){
 				$actionString = '<a href="#ex1" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>';
 			}else{
 				$actionString = '<a href="'.$result->page_url.'" target="_blank">VIEW</a>';
 			}
+			$pageUrl = $result->page_url;
 	    
 		
 		    $data[] = array(
-                    'page_name'       	=> $result->page_name.'<input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
-                    'assignee' 		=> $result->assignee,
-                    'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
+                    'page_name'       	=> '<a href="'.$pageUrl.'" target="_blank">'.$result->page_name.'</a><input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
+                    'assignee' 			=> $result->assignee,
+                    'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px; border:2px solid #ccc;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
                     'status_note'    	=> $result->status_note,
-		    'issue_date' 	=> $result->issue_date,
-		    'action'		=> $actionString,
+					'issue_date' 		=> $result->issue_date,
+					//'action'			=> $actionString,
                     );	
 		endforeach;		
       
