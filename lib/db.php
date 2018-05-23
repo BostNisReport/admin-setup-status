@@ -1,8 +1,4 @@
 <?php
-/**
-* Project: setupstatus.
-* Copyright: 2018 @Agent Design
-*/
 function post_setup_status_data(){
 	$sstatus = $_POST['status_color'];
 	$sassignee = $_POST['assignee'];
@@ -27,4 +23,3 @@ function post_setup_status_data(){
 	}		
 }
 add_action('wp_ajax_post_setup_status_data', 'post_setup_status_data');
-?>

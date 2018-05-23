@@ -51,8 +51,13 @@ function wptuts_styles_with_the_lot()
 add_action( 'wp_enqueue_scripts', 'wptuts_styles_with_the_lot' );
 
 function jquery_modal() {
+	
 	echo '<link href="'.SETUPSTATUS_PLUGIN_URL.'/assets/css/vendor/jquery.modal.min.css'.'"  rel="stylesheet">';
-	echo '<script type="text/javascript" src="'.SETUPSTATUS_PLUGIN_URL.'/assets/js/jquery.min.js'.'"></script>';
+	if(wp_script_is('jquery')) {
+		// do nothing
+	} else {
+		echo '<script type="text/javascript" src="'.SETUPSTATUS_PLUGIN_URL.'/assets/js/jquery.min.js'.'"></script>';
+	}
 	echo '<script type="text/javascript" src="'.SETUPSTATUS_PLUGIN_URL.'/assets/js/jquery.modal.min.js'.'"></script>';
 	//echo '<script type="text/javascript" src="'.plugins_url( 'setupstatus/assets/js/setupstatus.js').'"></script>';
 }
@@ -141,9 +146,6 @@ function add_toolbar_items($admin_bar){
 		));
 	}	
 
-	
-	
-	
 	global $wpdb;
 
 	$user = wp_get_current_user();
@@ -153,8 +155,8 @@ function add_toolbar_items($admin_bar){
 	$sqlColor = "SELECT * FROM ".$wpdb->prefix."setup_status_info uo WHERE id = (SELECT MAX(id) FROM ".$wpdb->prefix."setup_status_info WHERE page_name = uo.page_name AND page_name = '".get_admin_page_title()."')";
 	$resultColor = $wpdb->get_results($sqlColor);
 	$colorCode = '#'.$resultColor[0]->setup_status;
-	
-	if ( count($resultColor)>0 && count($resultColor)!='' ) { ?>
+	//print_r();
+	//if ( count($resultColor)>0 && count($resultColor)!='' ) { ?>
 		<style>
 			<?php if ($navText=="Edit"){?>
 			.ss_menu_parent_class .ab-icon::before{ color: <?php echo $colorCode;?> !important; }
@@ -165,7 +167,7 @@ function add_toolbar_items($admin_bar){
 		<div id="ex1" class="modal" style="display:none;">
 			<div class="modal-info">
 				<div id="nds_form_feedback" style="margin-bottom:10px; text-align:center;"></div>
-				<form method="post" id="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
+				<form method="post" class="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
 					<p>Status:<br>
 						<select class="statusColor" name="status_color">
 							<option <?php if ($resultColor[0]->setup_status == "ffffff"){ echo 'selected="selected"';} ?> value="ffffff">Default - White</option>
@@ -215,32 +217,32 @@ function add_toolbar_items($admin_bar){
 					<input type="hidden" name="action" value="post_setup_status_data" >
 					<input type="hidden" name="nonce" value="15a401ef5e" >
 					<input type="hidden" name="page_title" value="<?php echo get_admin_page_title();?>" >
-					<input type="hidden" id="uid" name="uid" value="<?php echo $resultColor[0]->id;?>" >
+					<input type="hidden" class="uid" name="uid" value="<?php echo $resultColor[0]->id;?>" >
 					<input type="submit" id="setupstatus" class="button button-primary" value="Save" /></p>
 				</form>
 			</div>
 		</div>
-		<div id="ex2" class="modal note-modal" style="display:none;">
+		<!--<div id="ex2" class="modal note-modal" style="display:none;">
 			<div class="modal-info">
 				<div id="nds_form_feedback">
 					<?php echo $resultColor[0]->status_note; ?>
 				</div>		
 			</div>
-		</div>
+		</div>-->
 	
-	<?php } else { ?>
+	<?php //} else { ?>
 	
-		<div id="ex2" class="modal note-modal" style="display:none;">
+		<!--<div id="ex2" class="modal note-modal" style="display:none;">
 			<div class="modal-info">
 				<div id="nds_form_feedback">
 					No notes available...
 				</div>		
 			</div>
-		</div>
+		</div>-->
 		<div id="ex3" class="modal" style="display:none;">
 			<div class="modal-info">
 				<div id="nds_form_feedback" style="margin-bottom:10px; text-align:center;"></div>
-				<form method="post" id="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
+				<form method="post" class="nds_add_user_meta_ajax_form" action="<?php echo site_url();?>/wp-admin/admin-post.php">
 					<p>Status:<br>
 						<select class="statusColor" name="status_color">
 							<option value="ffffff">Default - White</option>
@@ -284,17 +286,34 @@ function add_toolbar_items($admin_bar){
 					<input type="hidden" name="action" value="post_setup_status_data" >
 					<input type="hidden" name="nonce" value="15a401ef5e" >
 					<input type="hidden" name="page_title" value="<?php echo get_admin_page_title();?>" >
+					<input type="hidden" class="uid" name="uid" value="" >
 					<input type="submit" id="setupstatus" class="button button-primary" value="Save" /></p>
 				</form>
 			</div>
 		</div>
-	<?php } 	
+	<?php //} 	
 } 
-register_activation_hook( __FILE__, 'my_activation_func' );
+/*register_activation_hook( __FILE__, 'my_activation_func' );
 
 function my_activation_func() {
     file_put_contents( __DIR__ . '/my_loggg.txt', ob_get_contents() );
+}*/
+
+function tl_save_error() {
+    update_option( 'plugin_error',  ob_get_contents() );
 }
+
+add_action( 'activated_plugin', 'tl_save_error' );
+
+/* Then to display the error message: */
+
+echo get_option( 'plugin_error' );
+
+/* Or you could do the following: */
+
+file_put_contents( __DIR__ . '/my_loggg.txt', ob_get_contents() ); // or any suspected variable
+
+
 
 function plugin_add_settings_link( $links ) {
     $settings_link = '<a href="options-general.php?page=setupstatus">' . __( 'Settings' ) . '</a>';
@@ -397,14 +416,33 @@ class Example_List_Table extends WP_List_Table
      */
     public function get_columns()
     {
-        $columns = array(
-            'page_name'   	=> 'Page Name',
-			'assignee'   	=> 'Assignee',
-            'setup_status'  => 'Status',
-            'status_note' 	=> 'Note',
-			'issue_date' 	=> 'Time',
-			//'action' 	=> 'Action',
-        );
+		global $wpdb;	
+	    
+	    if( is_user_logged_in() ) {
+			$user = wp_get_current_user();
+			$role = ( array ) $user->roles;
+			$uRole = $role[0];
+		}
+		
+		if ($uRole == 'administrator'){
+			$columns = array(
+				'page_name'   	=> 'Page Name',
+				'assignee'   	=> 'Assignee',
+				'setup_status'  => 'Status',
+				'status_note' 	=> 'Note',
+				'issue_date' 	=> 'Time',
+				'action' 	=> 'Action',
+			);
+		}else{
+			$columns = array(
+				'page_name'   	=> 'Page Name',
+				'assignee'   	=> 'Assignee',
+				'setup_status'  => 'Status',
+				'status_note' 	=> 'Note',
+				'issue_date' 	=> 'Time',
+				//'action' 	=> 'Action',
+			);
+		}
         return $columns;
     }
     /**
@@ -434,7 +472,7 @@ class Example_List_Table extends WP_List_Table
     {
 		global $wpdb;	
 	    
-	    	if( is_user_logged_in() ) {
+	    if( is_user_logged_in() ) {
 			$user = wp_get_current_user();
 			$role = ( array ) $user->roles;
 			$uRole = $role[0];
@@ -466,21 +504,31 @@ class Example_List_Table extends WP_List_Table
 			}	
 	    
 	    	if ($uRole == 'administrator'){
-				$actionString = '<a href="#ex1" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>';
+				$actionString = '<a href="#ex3" id="row-'.$result->id.'" class="editDataClass" data-row="row-'.$result->id.'" data-id="'.$result->id.'" rel="modal:open">EDIT</a>';
 			}else{
 				$actionString = '<a href="'.$result->page_url.'" target="_blank">VIEW</a>';
 			}
 			$pageUrl = $result->page_url;
 	    
-		
-		    $data[] = array(
-                    'page_name'       	=> '<a href="'.$pageUrl.'" target="_blank">'.$result->page_name.'</a><input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
-                    'assignee' 			=> $result->assignee,
-                    'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px; border:2px solid #ccc;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
-                    'status_note'    	=> $result->status_note,
-					'issue_date' 		=> $result->issue_date,
-					//'action'			=> $actionString,
-                    );	
+			if ($uRole == 'administrator'){
+				$data[] = array(
+						'page_name'       	=> '<a href="'.$pageUrl.'" target="_blank">'.$result->page_name.'</a><input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
+						'assignee' 			=> $result->assignee,
+						'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px; border:2px solid #ccc;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
+						'status_note'    	=> $result->status_note,
+						'issue_date' 		=> $result->issue_date,
+						'action'			=> $actionString,
+						);	
+			}else{
+				$data[] = array(
+						'page_name'       	=> '<a href="'.$pageUrl.'" target="_blank">'.$result->page_name.'</a><input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
+						'assignee' 			=> $result->assignee,
+						'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px; border:2px solid #ccc;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
+						'status_note'    	=> $result->status_note,
+						'issue_date' 		=> $result->issue_date,
+						//'action'			=> $actionString,
+						);	
+			}
 		endforeach;		
       
         return $data;
@@ -495,17 +543,40 @@ class Example_List_Table extends WP_List_Table
      */
     public function column_default( $item, $column_name )
     {
-        switch( $column_name ) {
-            case 'page_name':
-            case 'assignee':
-            case 'setup_status':
-            case 'status_note':
-			case 'issue_date':
-			//case 'action':
-                return $item[ $column_name ];
-            default:
-                return print_r( $item, true ) ;
-        }
+		global $wpdb;	
+	    
+	    if( is_user_logged_in() ) {
+			$user = wp_get_current_user();
+			$role = ( array ) $user->roles;
+			$uRole = $role[0];
+		}
+		
+		if ($uRole == 'administrator'){
+		
+			switch( $column_name ) {
+				case 'page_name':
+				case 'assignee':
+				case 'setup_status':
+				case 'status_note':
+				case 'issue_date':
+				case 'action':
+					return $item[ $column_name ];
+				default:
+					return print_r( $item, true ) ;
+			}
+		}else{
+			switch( $column_name ) {
+				case 'page_name':
+				case 'assignee':
+				case 'setup_status':
+				case 'status_note':
+				case 'issue_date':
+				case 'action':
+					return $item[ $column_name ];
+				default:
+					return print_r( $item, true ) ;
+			}
+		}
     }
     /**
      * Allows you to sort the data by the variables set in the $_GET

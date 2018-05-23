@@ -8,6 +8,8 @@ $table_name = $wpdb->prefix . "setup_status_info";
 $my_products_db_version = '1.0.0';
 $charset_collate = $wpdb->get_charset_collate();
 
+$wpdb->query( "DROP TABLE IF EXISTS $table_name" );
+
 if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" ) != $table_name ) {
 
     $sql = "CREATE TABLE $table_name (
