@@ -510,12 +510,14 @@ class Example_List_Table extends WP_List_Table
 			}
 			$pageUrl = $result->page_url;
 	    
+	    		$noteString = implode("",explode("\\",$result->status_note));
+	    
 			if ($uRole == 'administrator'){
 				$data[] = array(
 						'page_name'       	=> '<a href="'.$pageUrl.'" target="_blank">'.$result->page_name.'</a><input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
 						'assignee' 			=> $result->assignee,
 						'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px; border:2px solid #ccc;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
-						'status_note'    	=> $result->status_note,
+						'status_note'    	=> stripslashes(trim($noteString)),
 						'issue_date' 		=> $result->issue_date,
 						'action'			=> $actionString,
 						);	
@@ -524,7 +526,7 @@ class Example_List_Table extends WP_List_Table
 						'page_name'       	=> '<a href="'.$pageUrl.'" target="_blank">'.$result->page_name.'</a><input type="hidden" id="eid" name="eid" value="'.$result->id.'" />',
 						'assignee' 			=> $result->assignee,
 						'setup_status'      => '<div class="table-status-color" style="width:15px; height:15px; background-color:#'.$result->setup_status.'; float: left; margin-right: 10px; margin-top: 4px; border:2px solid #ccc;"></div> <div class="table-status-text" style="float:left;">'.$statusText.'</div>',
-						'status_note'    	=> $result->status_note,
+						'status_note'    	=> stripslashes(trim($noteString)),
 						'issue_date' 		=> $result->issue_date,
 						//'action'			=> $actionString,
 						);	
